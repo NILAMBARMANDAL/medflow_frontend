@@ -29,16 +29,16 @@ export default function DoctorDashboard() {
         fetchDoctorLedger();
     }, []);
 
-    // Handles standard status transitions (Pending -> Scheduled / Cancelled)
+    // Handles standard status transitions (pending -> scheduled / cancelled)
     const handleUpdateStatus = async (appointmentId, targetStatus) => {
         setActionLoading(appointmentId);
-        setError(""); 
+        setError("");
         try {
             await api.patch("/appointments/update-status", {
-                appointmentId, 
-                newStatus: targetStatus 
+                appointmentId,
+                newStatus: targetStatus
             });
-            
+
             setAppointments((prev) =>
                 prev.map((appt) =>
                     appt._id === appointmentId ? { ...appt, status: targetStatus } : appt
@@ -56,7 +56,7 @@ export default function DoctorDashboard() {
     // Handles text-only completion payload delivery
     const handleFinalizeConsultation = async (e, appointmentId) => {
         e.preventDefault();
-        
+
         const trimmedNotes = clinicalNotes.trim();
         if (!trimmedNotes) {
             setError("⚠️ A concluding message is mandatory when completing an appointment.");
@@ -70,13 +70,13 @@ export default function DoctorDashboard() {
             // Sends a clean standard JSON object over the network layer
             await api.patch("/appointments/update-status", {
                 appointmentId,
-                newStatus: "Completed",
+                newStatus: "completed",
                 prescriptionNotes: trimmedNotes
             });
 
             setAppointments((prev) =>
                 prev.map((appt) =>
-                    appt._id === appointmentId ? { ...appt, status: "Completed", prescriptionNotes: trimmedNotes } : appt
+                    appt._id === appointmentId ? { ...appt, status: "completed", prescriptionNotes: trimmedNotes } : appt
                 )
             );
 
@@ -162,12 +162,12 @@ export default function DoctorDashboard() {
                                 const patientNode = appt.patient || appt.patientId || appt.user || appt.userId;
                                 const patientName = patientNode?.fullName || patientNode?.username || "In-Network Patient";
                                 const patientAvatar = patientNode?.avatar || "https://images.pexels.com/photos/4173251/pexels-photo-4173251.jpeg?auto=compress&cs=tinysrgb&w=150";
-                                const currentStatus = appt.status || "Pending";
+                                const currentStatus = appt.status || "pending";
                                 const isExpanded = completingId === appt._id;
 
                                 return (
                                     <div key={appt._id} className="divide-y divide-slate-100 bg-white">
-                                        
+
                                         <div className="grid grid-cols-12 items-center px-5 py-3 hover:bg-slate-50/40 transition-colors text-xs text-slate-600">
                                             <div className="col-span-3 flex items-center space-x-3">
                                                 <img src={patientAvatar} alt="Patient" className="h-8 w-8 rounded-full object-cover border border-slate-100 shadow-xs flex-shrink-0" />
@@ -196,14 +196,14 @@ export default function DoctorDashboard() {
                                                     <>
                                                         <button
                                                             disabled={actionLoading !== null}
-                                                            onClick={() => handleUpdateStatus(appt._id, "Scheduled")}
+                                                            onClick={() => handleUpdateStatus(appt._id, "scheduled")}
                                                             className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1 px-1.5 rounded text-[10px] uppercase transition shadow-xs cursor-pointer disabled:opacity-40"
                                                         >
                                                             {actionLoading === appt._id ? "..." : "Approve"}
                                                         </button>
                                                         <button
                                                             disabled={actionLoading !== null}
-                                                            onClick={() => handleUpdateStatus(appt._id, "Cancelled")}
+                                                            onClick={() => handleUpdateStatus(appt._id, "cancelled")}
                                                             className="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold py-1 px-1.5 rounded text-[10px] uppercase transition shadow-xs cursor-pointer disabled:opacity-40"
                                                         >
                                                             {actionLoading === appt._id ? "..." : "Cancel"}
@@ -230,12 +230,12 @@ export default function DoctorDashboard() {
                                         {isExpanded && (
                                             <div className="bg-slate-50 border-t border-b border-slate-200 p-4 px-6 animate-in slide-in-from-top-2 duration-200">
                                                 <form onSubmit={(e) => handleFinalizeConsultation(e, appt._id)} className="flex flex-col md:flex-row items-end gap-4">
-                                                    
+
                                                     <div className="flex-1 space-y-1 w-full">
                                                         <label className="block text-[10px] font-black uppercase text-slate-600 tracking-wider">
                                                             Concluding Message / Prescription Notes *
                                                         </label>
-                                                        <input 
+                                                        <input
                                                             type="text"
                                                             placeholder="Enter care directions or clinical review notes here..."
                                                             value={clinicalNotes}
@@ -251,7 +251,7 @@ export default function DoctorDashboard() {
                                                             disabled={actionLoading !== null}
                                                             className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2.5 px-6 rounded-lg transition tracking-wide shadow-md cursor-pointer disabled:bg-slate-400 whitespace-nowrap"
                                                         >
-                                                            {actionLoading === appt._id ? "Saving Notes... ⏳" : "Finalize Session 🚀"}
+                                                            {actionLoading === appt._id ? "Saving Notes... ⏳" : "Finalize Session "}
                                                         </button>
                                                     </div>
 

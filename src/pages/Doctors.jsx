@@ -1,7 +1,6 @@
 // 📑 src/pages/Doctors.jsx
 import { useState, useEffect } from "react";
 import api from "../services/api.js";
-import axios from "axios";
 
 export default function Doctors() {
     const [doctors, setDoctors] = useState([]);
@@ -13,13 +12,8 @@ export default function Doctors() {
     const [maxFees, setMaxFees] = useState("");
     const [minExperience, setMinExperience] = useState("");
 
-    // 🧠 AI MLOps Input States
-    const [aiSymptoms, setAiSymptoms] = useState("");
-    const [aiLoading, setAiLoading] = useState(false);
-    const [aiSuccessMsg, setAiSuccessMsg] = useState("");
-
     // 📅 Booking Engine Dialog States
-    const [selectedDoctor, setSelectedDoctor] = useState(null); 
+    const [selectedDoctor, setSelectedDoctor] = useState(null);
     const [appointmentDate, setAppointmentDate] = useState("");
     const [reasonForVisit, setReasonForVisit] = useState("");
     const [bookingLoading, setBookingLoading] = useState(false);
@@ -50,37 +44,10 @@ export default function Doctors() {
         fetchFilteredDirectory();
     }, [specialization, maxFees, minExperience]);
 
-    const handleAISymptomAnalysis = async (e) => {
-        e.preventDefault();
-        if (!aiSymptoms.trim()) return;
-
-        setAiLoading(true);
-        setError("");
-        setAiSuccessMsg("");
-
-        try {
-            const response = await axios.post("http://127.0.0.1:5000/api/v1/predict-specialty", {
-                symptoms: aiSymptoms
-            });
-
-            const predictedCategory = response.data?.recommended_specialty;
-            
-            if (predictedCategory) {
-                setSpecialization(predictedCategory);
-                setAiSuccessMsg(`🧠 MedFlow AI recommendation: Configured filter to "${predictedCategory}"`);
-            }
-        } catch (err) {
-            console.error("AI microservice handshake failed:", err);
-            setError("AI Triage engine is currently offline. Please use manual selection dropdowns.");
-        } finally {
-            setAiLoading(false);
-        }
-    };
-
     const handleProcessBooking = async (e) => {
         e.preventDefault();
-        
-        // Target target core user identifier node safely
+
+        // Target core user identifier node safely
         const targetDoctorUserId = selectedDoctor?.doctor?._id || selectedDoctor?.doctor;
 
         if (!targetDoctorUserId || !appointmentDate || !reasonForVisit.trim()) {
@@ -93,15 +60,14 @@ export default function Doctors() {
         setBookingSuccess("");
 
         try {
-            // 🎯 FIXED: Now explicitly targets the User Collection reference object ID instead of the Profile container ID
             await api.post("/appointments/book", {
-                doctorId: targetDoctorUserId, 
+                doctorId: targetDoctorUserId,
                 appointmentDate: new Date(appointmentDate).toISOString(),
                 reasonForVisit: reasonForVisit.trim()
             });
 
             setBookingSuccess(`🎉 Session booked with Dr. ${selectedDoctor.doctor?.fullName || "Specialist"} successfully! Status set to pending.`);
-            
+
             setTimeout(() => {
                 setSelectedDoctor(null);
                 setAppointmentDate("");
@@ -121,8 +87,6 @@ export default function Doctors() {
         setSpecialization("");
         setMaxFees("");
         setMinExperience("");
-        setAiSymptoms("");
-        setAiSuccessMsg("");
     };
 
     const RenderStarsRating = ({ avgRating, totalReviews }) => {
@@ -150,43 +114,12 @@ export default function Doctors() {
                 <p className="text-slate-400 text-xs font-medium">Select an active clinical provider to book your appointment session.</p>
             </div>
 
-            {/* AI TRIAGE SMART BAR COMPONENT */}
-            <div className="bg-gradient-to-r from-slate-900 to-indigo-950 rounded-xl p-4 text-white shadow-md border border-slate-800">
-                <form onSubmit={handleAISymptomAnalysis} className="space-y-2">
-                    <div className="flex flex-col space-y-1">
-                        <label className="text-[11px] uppercase tracking-wider font-bold text-indigo-300">
-                            🤖 AI Symptom Triage Classifier (MLOps Microservice)
-                        </label>
-                        <p className="text-slate-400 text-[11px]">Describe what you are feeling in plain text. Our Python inference engine will automatically filter to the correct specialist department.</p>
-                    </div>
-                    <div className="flex gap-2">
-                        <input 
-                            type="text"
-                            value={aiSymptoms}
-                            onChange={(e) => setAiSymptoms(e.target.value)}
-                            placeholder="e.g., I have sharp chest pains, elevated blood pressure, and standard shortness of breath..."
-                            className="flex-1 bg-slate-800/60 border border-slate-700 p-2.5 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        />
-                        <button
-                            type="submit"
-                            disabled={aiLoading}
-                            className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-4 py-2.5 rounded-lg transition tracking-wide shadow-md disabled:bg-slate-700 cursor-pointer flex items-center shrink-0"
-                        >
-                            {aiLoading ? "Analyzing..." : "Analyze Symptoms 🚀"}
-                        </button>
-                    </div>
-                    {aiSuccessMsg && (
-                        <p className="text-emerald-400 text-[11px] font-bold animate-in fade-in pl-0.5">{aiSuccessMsg}</p>
-                    )}
-                </form>
-            </div>
-
             {/* MANUAL GRANULAR FILTER BARS */}
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 bg-white border border-slate-200 p-3 rounded-xl shadow-xs">
                 <div>
                     <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1">Department Specialty</label>
-                    <select 
-                        value={specialization} 
+                    <select
+                        value={specialization}
                         onChange={(e) => setSpecialization(e.target.value)}
                         className="w-full p-2 border border-slate-300 rounded-lg text-xs font-semibold bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500"
                     >
@@ -202,7 +135,7 @@ export default function Doctors() {
 
                 <div>
                     <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1">Max Consultation Fee</label>
-                    <input 
+                    <input
                         type="number"
                         placeholder="Maximum budget (₹)"
                         value={maxFees}
@@ -213,7 +146,7 @@ export default function Doctors() {
 
                 <div>
                     <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1">Min Experience (Years)</label>
-                    <input 
+                    <input
                         type="number"
                         placeholder="Minimum clinical years"
                         value={minExperience}
@@ -223,7 +156,7 @@ export default function Doctors() {
                 </div>
 
                 <div className="flex items-end">
-                    <button 
+                    <button
                         onClick={clearAllFilters}
                         className="w-full bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 font-bold py-2 rounded-lg text-xs transition cursor-pointer"
                     >
@@ -249,9 +182,9 @@ export default function Doctors() {
                         const userProfile = doc.doctor || {};
                         return (
                             <div key={doc._id} className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex space-x-4 hover:shadow-md transition-shadow duration-200">
-                                <img 
-                                    src={userProfile.avatar || "https://images.pexels.com/photos/4173251/pexels-photo-4173251.jpeg?auto=compress&cs=tinysrgb&w=150"} 
-                                    alt="Doctor profile" 
+                                <img
+                                    src={userProfile.avatar || "https://images.pexels.com/photos/4173251/pexels-photo-4173251.jpeg?auto=compress&cs=tinysrgb&w=150"}
+                                    alt="Doctor profile"
                                     className="h-16 w-16 rounded-full object-cover border border-slate-100 shadow-xs flex-shrink-0"
                                 />
                                 <div className="flex-1 space-y-2 min-w-0">
@@ -267,7 +200,7 @@ export default function Doctors() {
                                     <p className="text-slate-400 italic text-[11px] line-clamp-2">
                                         "{doc.bio || "No custom profile narrative summary provided by the physician."}"
                                     </p>
-                                    <button 
+                                    <button
                                         onClick={() => {
                                             setSelectedDoctor(doc);
                                             setError("");
@@ -288,13 +221,13 @@ export default function Doctors() {
             {selectedDoctor && (
                 <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex justify-center items-center p-4 z-50 animate-in fade-in duration-150">
                     <div className="bg-white rounded-xl border border-slate-200 w-full max-w-md p-6 shadow-xl space-y-4 animate-in zoom-in-95 duration-150">
-                        
+
                         <div className="flex justify-between items-start border-b border-slate-100 pb-3">
                             <div>
                                 <h2 className="text-base font-black text-slate-900">Reserve Consultation Slot</h2>
                                 <p className="text-[11px] font-semibold text-sky-600 uppercase tracking-wider">{selectedDoctor.specialization}</p>
                             </div>
-                            <button 
+                            <button
                                 onClick={() => setSelectedDoctor(null)}
                                 className="text-slate-400 hover:text-slate-600 text-sm font-bold cursor-pointer"
                             >
@@ -318,7 +251,7 @@ export default function Doctors() {
 
                                 <div className="space-y-1">
                                     <label className="block text-[10px] font-black uppercase text-slate-500 tracking-wide">Target Appointment Date & Time *</label>
-                                    <input 
+                                    <input
                                         type="datetime-local"
                                         value={appointmentDate}
                                         onChange={(e) => setAppointmentDate(e.target.value)}
@@ -329,7 +262,7 @@ export default function Doctors() {
 
                                 <div className="space-y-1">
                                     <label className="block text-[10px] font-black uppercase text-slate-500 tracking-wide">Patient Intake Symptoms Narrative *</label>
-                                    <textarea 
+                                    <textarea
                                         placeholder="Describe your active medical problems or visit reasons explicitly..."
                                         value={reasonForVisit}
                                         onChange={(e) => setReasonForVisit(e.target.value)}

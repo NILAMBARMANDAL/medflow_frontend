@@ -21,12 +21,12 @@ export default function Login() {
         phoneNumber: "",
         role: "patient", // Restricted to public options
         sex: "male",
-        
+
         // Doctor profile specific fields matching your backend schema
         specialization: "General Medicine",
         experience: "",
         fees: "",
-        qualifications: "" 
+        qualifications: ""
     });
 
     // Raw binary files state management for Multer
@@ -46,7 +46,7 @@ export default function Login() {
     const handleAvatarChange = (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        if (file.size > 3 * 1024 * 1024) { 
+        if (file.size > 3 * 1024 * 1024) {
             setError("⚠️ Profile picture files must stay under a 3MB size threshold.");
             return;
         }
@@ -59,7 +59,7 @@ export default function Login() {
     const handleCertificateChange = (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        if (file.size > 5 * 1024 * 1024) { 
+        if (file.size > 5 * 1024 * 1024) {
             setError("⚠️ Certificate document files must stay under a 5MB size threshold.");
             return;
         }
@@ -89,7 +89,7 @@ export default function Login() {
             if (isRegister) {
                 // 🚀 REGISTRATION PIPELINE (No admin data allocation fields)
                 const dataPayload = new FormData();
-                
+
                 dataPayload.append("email", formData.email);
                 dataPayload.append("password", formData.password);
                 dataPayload.append("username", formData.username);
@@ -104,7 +104,7 @@ export default function Login() {
                     dataPayload.append("specialization", formData.specialization);
                     dataPayload.append("experience", formData.experience);
                     dataPayload.append("fees", formData.fees);
-                    
+
                     const parsedQualifications = formData.qualifications
                         ? formData.qualifications.split(",").map(q => q.trim())
                         : ["MBBS"];
@@ -116,7 +116,7 @@ export default function Login() {
                 });
 
                 setSuccessMessage("Registration request transmitted successfully! 🎉 Awaiting administrative review...");
-                
+
                 setTimeout(() => {
                     setIsRegister(false);
                     setSuccessMessage("");
@@ -126,12 +126,19 @@ export default function Login() {
                 }, 2000);
             } else {
                 // 🚀 LOGIN PIPELINE WITH AUTO-REDIRECTION CONTROL
-                const loggedInUser = await login(formData.email, formData.password);
-                
-                // Route user context objects dynamically based on database authority role
-                if (loggedInUser?.role === "admin") {
+                const result = await login(formData.email, formData.password);
+
+                if (!result.success) {
+                    // Login failed (wrong credentials, etc.) — show the error and stop.
+                    setError(result.error || "Login failed. Please check your credentials.");
+                    return;
+                }
+
+                // Route user dynamically based on their role from the returned user object.
+                const role = result.user?.role;
+                if (role === "admin") {
                     navigate("/admin/dashboard");
-                } else if (loggedInUser?.role === "doctor") {
+                } else if (role === "doctor") {
                     navigate("/doctor/dashboard");
                 } else {
                     navigate("/");
@@ -154,7 +161,7 @@ export default function Login() {
     return (
         <div className="min-h-[85vh] flex justify-center items-center px-4 py-8">
             <div className="w-full max-w-lg bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden transition-all duration-300">
-                
+
                 <div className="bg-slate-900 p-6 text-center text-white space-y-1">
                     <h2 className="text-2xl font-black tracking-tight">
                         {isRegister ? "Join MedFlow 🩺" : "Welcome Back ⚡"}
@@ -165,14 +172,14 @@ export default function Login() {
                 </div>
 
                 <form onSubmit={handleSubmit} className="p-6 space-y-4" encType="multipart/form-data">
-                    
+
                     {error && <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-lg text-xs font-bold text-center">{error}</div>}
                     {successMessage && <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg text-xs font-bold text-center">{successMessage}</div>}
 
                     {/* DYNAMIC MULTI-ROLE REGISTRATION FIELDS */}
                     {isRegister && (
                         <div className="grid grid-cols-2 gap-3 animate-in fade-in zoom-in-95 duration-200">
-                            
+
                             <div className="col-span-2">
                                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide">Full Name</label>
                                 <input type="text" name="fullName" value={formData.fullName} onChange={handleInputChange} placeholder="Tony Stark" className="w-full mt-1 p-2 border border-slate-300 rounded-lg bg-slate-50 text-xs text-slate-900 focus:ring-2 focus:ring-sky-500 focus:outline-none" required />
@@ -215,7 +222,7 @@ export default function Login() {
                                 </div>
                             </div>
 
-                            {/* DOCTOR CREDENTIAL METADATA WRAPPERS (Cleaned of Bio textarea field) */}
+                            {/* DOCTOR CREDENTIAL METADATA WRAPPERS */}
                             {formData.role === "doctor" && (
                                 <div className="col-span-2 grid grid-cols-2 gap-3 mt-2 pt-3 border-t border-dashed border-slate-200 animate-in slide-in-from-top-2 duration-200">
                                     <div className="col-span-2 bg-sky-50 border border-sky-100 rounded-lg px-3 py-1.5 text-[11px] font-medium text-sky-800">
@@ -248,12 +255,12 @@ export default function Login() {
                                     <div className="col-span-2">
                                         <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide">Upload Registration Certificate (PDF/Image)</label>
                                         <div className="mt-1 bg-white border border-slate-300 rounded-lg p-2 flex items-center">
-                                            <input 
-                                                type="file" 
+                                            <input
+                                                type="file"
                                                 name="certificate"
-                                                accept="image/*,application/pdf" 
-                                                onChange={handleCertificateChange} 
-                                                className="text-xs text-slate-500 file:mr-3 file:py-1 file:px-2.5 file:rounded file:border-0 file:text-xs file:font-bold file:bg-purple-950 file:text-white hover:file:bg-purple-800 transition file:cursor-pointer" 
+                                                accept="image/*,application/pdf"
+                                                onChange={handleCertificateChange}
+                                                className="text-xs text-slate-500 file:mr-3 file:py-1 file:px-2.5 file:rounded file:border-0 file:text-xs file:font-bold file:bg-purple-950 file:text-white hover:file:bg-purple-800 transition file:cursor-pointer"
                                                 required
                                             />
                                         </div>
@@ -274,17 +281,17 @@ export default function Login() {
                         <div>
                             <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide">Secure Password</label>
                             <div className="relative mt-1">
-                                <input 
-                                    type={showPassword ? "text" : "password"} 
-                                    name="password" 
-                                    value={formData.password} 
-                                    onChange={handleInputChange} 
-                                    placeholder="••••••••••••" 
-                                    className="w-full p-2.5 pr-10 border border-slate-300 rounded-lg bg-slate-50 text-xs text-slate-900 focus:ring-2 focus:ring-sky-500 focus:outline-none" 
-                                    required 
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleInputChange}
+                                    placeholder="••••••••••••"
+                                    className="w-full p-2.5 pr-10 border border-slate-300 rounded-lg bg-slate-50 text-xs text-slate-900 focus:ring-2 focus:ring-sky-500 focus:outline-none"
+                                    required
                                 />
-                                <button 
-                                    type="button" 
+                                <button
+                                    type="button"
                                     onClick={() => setShowPassword(!showPassword)}
                                     className="absolute inset-y-0 right-0 pr-3 flex items-center text-xs font-bold text-slate-400 hover:text-sky-600 transition select-none cursor-pointer"
                                 >

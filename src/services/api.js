@@ -1,9 +1,10 @@
-// 📑 src/services/api.js
+
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "http://localhost:8000/api/v1", // 🔌 Connects directly to your Express backend port
-    withCredentials: true, // 🍪 Automatically handles HTTP-Only cookies/tokens behind the scenes
+   
+    baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1",
+    withCredentials: true, // Sends httpOnly auth cookies with every request
     headers: {
         "Content-Type": "application/json",
     }

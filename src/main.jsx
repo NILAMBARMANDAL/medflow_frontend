@@ -80,7 +80,7 @@ const router = createBrowserRouter([
       {
         path: "admin/dashboard",
         element: (
-          // 🎯 Guarded with the dedicated AdminRoute boundary component
+          //  Guarded with the dedicated AdminRoute boundary component
           <AdminRoute>
             <AdminDashboard />
           </AdminRoute>

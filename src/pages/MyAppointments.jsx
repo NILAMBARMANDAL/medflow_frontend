@@ -7,7 +7,7 @@ export default function MyAppointments() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
-    // ⭐ Review Interaction States
+    //  Review Interaction States
     const [activePanelId, setActivePanelId] = useState(null);
     const [rating, setRating] = useState(5);
     const [comment, setComment] = useState("");
@@ -85,17 +85,18 @@ export default function MyAppointments() {
         return { date, time };
     };
 
-    const getStatusStyles = (status) => {
+const getStatusStyles = (status) => {
         const normalized = status?.toLowerCase() || "pending";
         if (normalized === "completed") {
             return "bg-sky-50 border-sky-200 text-sky-700";
         }
-        if (normalized === "confirmed" || normalized === "approved" || normalized === "scheduled") {
+        if (normalized === "scheduled") {
             return "bg-emerald-50 border-emerald-200 text-emerald-700";
         }
-        if (normalized === "cancelled" || normalized === "rejected" || normalized === "failed") {
+        if (normalized === "cancelled") {
             return "bg-rose-50 border-rose-200 text-rose-700";
         }
+        // pending (and any unknown) → amber
         return "bg-amber-50 border-amber-200 text-amber-700";
     };
 
