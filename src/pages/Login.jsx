@@ -1,5 +1,5 @@
 // 📑 src/pages/Login.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import api from "../services/api.js";
@@ -37,6 +37,26 @@ export default function Login() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
+
+    // Clear any lingering form state when the login page mounts (e.g. after logout)
+    useEffect(() => {
+        setFormData({
+            email: "",
+            password: "",
+            username: "",
+            fullName: "",
+            phoneNumber: "",
+            role: "patient",
+            sex: "male",
+            specialization: "General Medicine",
+            experience: "",
+            fees: "",
+            qualifications: ""
+        });
+        setAvatarFile(null);
+        setAvatarPreview("");
+        setCertificateFile(null);
+    }, []);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -302,7 +322,7 @@ export default function Login() {
                     </div>
 
                     <button type="submit" disabled={loading} className="w-full mt-2 bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 px-4 rounded-lg text-xs uppercase tracking-wider transition shadow-md flex justify-center items-center cursor-pointer disabled:bg-slate-400">
-                        {loading ? "Processing Pipeline... ⏳" : isRegister ? "Submit Registration Roster 🚀" : "Authorize Session Securely 🔑"}
+                        {loading ? "Processing Pipeline... ⏳" : isRegister ? "Submit Registration Roster " : "Authorize Session Securely "}
                     </button>
 
                     <div className="text-center pt-2 border-t border-slate-100">
