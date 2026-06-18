@@ -48,34 +48,34 @@ export default function AdminDashboard() {
     if (loading) {
         return (
             <div className="flex justify-center items-center min-h-[40vh]">
-                <div className="animate-spin rounded-full h-8 w-8 border-3 border-slate-200 border-t-purple-600"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-3 border-slate-200 dark:border-slate-700 border-t-purple-600"></div>
             </div>
         );
     }
 
     return (
         <div className="space-y-4 max-w-6xl mx-auto px-2 sm:px-4">
-            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-3">
                 <div>
-                    <h1 className="text-2xl font-black text-slate-900 tracking-tight">Master Verification Control</h1>
+                    <h1 className="text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">Master Verification Control</h1>
                     <p className="text-slate-400 text-xs font-medium">Review credentials, credentials certificates, and authorize doctor credentials.</p>
                 </div>
-                <div className="bg-purple-50 border border-purple-100 text-purple-800 text-[11px] font-bold px-2.5 py-1 rounded-md shadow-xs">
+                <div className="bg-purple-50 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-800 text-purple-800 dark:text-purple-300 text-[11px] font-bold px-2.5 py-1 rounded-md shadow-xs">
                     Pending Applications: {pendingProfiles.length}
                 </div>
             </div>
 
-            {error && <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-lg text-xs font-bold">{error}</div>}
+            {error && <div className="p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 rounded-lg text-xs font-bold">{error}</div>}
 
             {pendingProfiles.length === 0 ? (
-                <div className="p-12 bg-white rounded-xl border border-slate-200 text-center text-slate-400 text-xs font-medium">
+                <div className="p-12 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-center text-slate-400 text-xs font-medium">
                     🎉 Excellent! The medical onboarding verification queue is completely clear.
                 </div>
             ) : (
-                <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-xs">
+                <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xs">
                     <div className="min-w-[950px]">
                         {/* Table Headers */}
-                        <div className="grid grid-cols-12 bg-slate-900 text-slate-300 text-[11px] font-bold uppercase tracking-wider px-5 py-3 border-b border-slate-800">
+                        <div className="grid grid-cols-12 bg-slate-900 dark:bg-slate-950 text-slate-300 text-[11px] font-bold uppercase tracking-wider px-5 py-3 border-b border-slate-800 dark:border-slate-700">
                             <div className="col-span-3">Applicant Doctor</div>
                             <div className="col-span-2">Specialty & Exp</div>
                             <div className="col-span-2">Qualifications</div>
@@ -84,32 +84,32 @@ export default function AdminDashboard() {
                         </div>
 
                         {/* Table Rows */}
-                        <div className="divide-y divide-slate-100">
+                        <div className="divide-y divide-slate-100 dark:divide-slate-700">
                             {pendingProfiles.map((profile) => {
                                 const userNode = profile.doctor; // Core User info populated from backend query
                                 const doctorName = userNode?.fullName || "Awaiting Name";
                                 const doctorAvatar = userNode?.avatar || "https://images.pexels.com/photos/4173251/pexels-photo-4173251.jpeg?auto=compress&cs=tinysrgb&w=150";
-                                
+
                                 return (
-                                    <div key={profile._id} className="grid grid-cols-12 items-center px-5 py-4 hover:bg-slate-50/50 transition text-xs text-slate-600">
-                                        
+                                    <div key={profile._id} className="grid grid-cols-12 items-center px-5 py-4 hover:bg-slate-50/50 dark:hover:bg-slate-700/40 transition text-xs text-slate-600 dark:text-slate-300">
+
                                         {/* 1. Doctor Profile Image, Name, and Email */}
                                         <div className="col-span-3 flex items-center space-x-3">
-                                            <img src={doctorAvatar} alt="Doctor profile" className="h-9 w-9 rounded-full object-cover border border-slate-100 shadow-xs flex-shrink-0" />
+                                            <img src={doctorAvatar} alt="Doctor profile" className="h-9 w-9 rounded-full object-cover border border-slate-100 dark:border-slate-700 shadow-xs flex-shrink-0" />
                                             <div className="truncate">
-                                                <p className="font-bold text-slate-800 text-sm">Dr. {doctorName}</p>
+                                                <p className="font-bold text-slate-800 dark:text-slate-100 text-sm">Dr. {doctorName}</p>
                                                 <p className="text-[10px] text-slate-400">@{userNode?.username}</p>
-                                                <p className="text-[10px] text-slate-500 font-medium truncate">{userNode?.email}</p>
+                                                <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate">{userNode?.email}</p>
                                             </div>
                                         </div>
 
                                         {/* 2. Specialization & Experience */}
                                         <div className="col-span-2 space-y-1">
-                                            <span className="text-[10px] font-bold text-sky-600 bg-sky-50 border border-sky-100 px-2 py-0.5 rounded uppercase tracking-wide inline-block">
+                                            <span className="text-[10px] font-bold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/40 border border-sky-100 dark:border-sky-800 px-2 py-0.5 rounded uppercase tracking-wide inline-block">
                                                 {profile.specialization}
                                             </span>
-                                            <p className="text-[11px] font-semibold text-slate-500 pl-1">
-                                                Experience: <span className="text-slate-800 font-bold">{profile.experience} Years</span>
+                                            <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 pl-1">
+                                                Experience: <span className="text-slate-800 dark:text-slate-200 font-bold">{profile.experience} Years</span>
                                             </p>
                                         </div>
 
@@ -117,29 +117,29 @@ export default function AdminDashboard() {
                                         <div className="col-span-2 flex flex-wrap gap-1 pr-2">
                                             {Array.isArray(profile.qualifications) ? (
                                                 profile.qualifications.map((qual, idx) => (
-                                                    <span key={idx} className="bg-slate-100 text-slate-700 text-[10px] px-1.5 py-0.5 rounded font-medium border border-slate-200">
+                                                    <span key={idx} className="bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-[10px] px-1.5 py-0.5 rounded font-medium border border-slate-200 dark:border-slate-600">
                                                         {qual}
                                                     </span>
                                                 ))
                                             ) : (
-                                                <span className="bg-slate-100 text-slate-700 text-[10px] px-1.5 py-0.5 rounded border border-slate-200 font-medium">MBBS</span>
+                                                <span className="bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-[10px] px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-600 font-medium">MBBS</span>
                                             )}
-                                            <p className="text-[11px] font-semibold text-slate-500 w-full mt-1 pl-0.5">
-                                                Fee: <span className="text-emerald-600 font-bold">₹{profile.fees}</span>
+                                            <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 w-full mt-1 pl-0.5">
+                                                Fee: <span className="text-emerald-600 dark:text-emerald-400 font-bold">₹{profile.fees}</span>
                                             </p>
                                         </div>
 
                                         {/* 4. Bio and Medical Certificate Document Link */}
                                         <div className="col-span-3 pr-4 space-y-1.5">
-                                            <p className="text-slate-500 italic whitespace-normal break-words line-clamp-2">
+                                            <p className="text-slate-500 dark:text-slate-400 italic whitespace-normal break-words line-clamp-2">
                                                 "{profile.bio || "No bio statement written."}"
                                             </p>
                                             {profile.medicalCertificate && (
-                                                <a 
-                                                    href={profile.medicalCertificate} 
-                                                    target="_blank" 
+                                                <a
+                                                    href={profile.medicalCertificate}
+                                                    target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="inline-flex items-center text-[10px] font-bold text-purple-600 hover:text-purple-800 underline transition tracking-wide bg-purple-50 px-2 py-0.5 border border-purple-200 rounded"
+                                                    className="inline-flex items-center text-[10px] font-bold text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 underline transition tracking-wide bg-purple-50 dark:bg-purple-950/40 px-2 py-0.5 border border-purple-200 dark:border-purple-800 rounded"
                                                 >
                                                     📄 View Cloudinary Document 📁
                                                 </a>

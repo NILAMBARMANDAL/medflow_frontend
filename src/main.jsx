@@ -14,7 +14,7 @@ import MyAppointments from './pages/MyAppointments.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import DoctorDashboard from './pages/DoctorDashboard.jsx';
 import AdminDashboard from './pages/AdminDashboard.jsx';
-
+import { ThemeProvider } from "./context/ThemeContext.jsx";
 // 🔐 Secure Admin Gate Wrapper: Prevents URL hijacking
 function AdminRoute({ children }) {
     const { user, loading } = useAuth();
@@ -92,8 +92,10 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
+    </ThemeProvider>
   </StrictMode>,
 );
